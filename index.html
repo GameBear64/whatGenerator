@@ -1,0 +1,119 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>What? How? Where?</title>
+        <style>
+            body {
+                margin: 0;
+                padding-top: 2%;
+                text-align: center;
+                background-color: black;
+                color: white;
+            }
+
+            input {
+                width: 20%;
+                height: 3%;
+                margin: 5px;
+            }
+
+            button {
+                margin: 1%;
+                height: 3%;
+            }
+
+            img {
+                max-height: 60vh;
+                min-height: 60vh;
+                border: 4px solid #ddd;
+                padding: 5px;
+            }
+
+            h1 {
+                font-size: 10vh;
+                margin: 0;
+            }
+
+            h2 {
+                font-size: 3vh;
+                margin: 0;
+                font-weight: lighter;
+            }
+        </style>
+    </head>
+    <body>
+        <h1 class="hideshow">What Generator</h1>
+        <h2 class="hideshow">Fill out the feilds below. Refresh to reset.</h2>
+        <h2 style="display: none; color: red;" id="error" class="hideshow">At least put a media file in there</h2>
+        <div style="height: 10%;" class="hideshow"></div>
+        <form class="hideshow">
+            <input type="file" id="input"> <br>
+            <input type="text" id="text1" placeholder="Big text"> <br>
+            <input type="text" id="text2" placeholder="Small text"> <br>
+            <button onclick="generate()" type="button">Generate</button>
+        </form>
+       
+        <div id="x"></div>
+        <h1 id="h1"></h1>
+        <h2 id="h2"></h2>
+
+        <script>
+            function generate() {
+
+                let x = document.getElementById("x")
+                while (x.firstChild) {
+                    x.removeChild(x.firstChild)
+                }
+                
+                for (const element of document.getElementsByClassName("hideShow")) {
+                    element.style.display = "none"
+                }
+
+                if ((document.getElementById("input").files[0].type).includes("image")) {
+                    firstStep("image")
+
+                } else if ((document.getElementById("input").files[0].type).includes("video")) {
+                    firstStep("video")
+                }
+            }
+
+            function firstStep(type) {
+                let media
+                if (type == "video") {
+                    media = document.createElement("video");
+                    media.autoplay = true
+                    media.onended = function(e) {
+                        finalStep()
+                    };
+                } else if (type == "image") {
+                    media = document.createElement("img");
+                    finalStep()
+                }
+                
+                try {
+                    media.src = URL.createObjectURL(document.getElementById("input").files[0]);
+                    media.onload = function() {
+                        URL.revokeObjectURL(this.src);
+                    } 
+                    
+                    x.appendChild(media);
+
+                } catch (error) {
+                    console.log(error)
+                    document.getElementById("error").style.display = "inherit"
+                    return;
+                }
+            }
+
+            function finalStep() {
+                document.getElementById("text1").value ? document.getElementById("h1").innerText = document.getElementById("text1").value : document.getElementById("h1").innerText = "What?"
+                document.getElementById("h2").innerText = document.getElementById("text2").value
+
+                let audio = new Audio('what.mp3')
+                audio.loop = true
+                audio.play()
+            }
+        </script>
+    </body>
+</html>
